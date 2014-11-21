@@ -1,4 +1,4 @@
-package z.texas;
+package z.texas.game;
 
 public class Card {
 	public static final int SUIT_SPADES = 0;

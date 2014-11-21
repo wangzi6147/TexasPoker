@@ -1,7 +1,8 @@
-package z.texas;
+package z.texas.game;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 
 public class Dealer {
 	private ArrayList<Card> pile;	//牌堆

@@ -8,10 +8,12 @@ import java.net.UnknownHostException;
 
 public class Client{
 	private Socket socket;
+	private DataOutputStream dos;
+	private DataInputStream dis;
 
 	public Boolean connect(String ip, int port){
 		try {
-			socket = new Socket(ip, 8080);
+			socket = new Socket(ip, port);
 			if(socket.isConnected())
 				return true;
 		} catch (UnknownHostException e) {
@@ -24,16 +26,17 @@ public class Client{
 		return false;
 	}
 
-	public void send(String string) {
+	public String send(String string) {
 		try {
-			DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-			DataInputStream dis = new DataInputStream(socket.getInputStream());
+			dos = new DataOutputStream(socket.getOutputStream());
 			dos.writeUTF(string);
-			System.out.println(dis.readUTF());
+			dos.flush();
+			dis = new DataInputStream(socket.getInputStream());
+			return dis.readUTF();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		return null;
 	}
 }

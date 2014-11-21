@@ -1,43 +1,38 @@
 package z.texas;
 
 import java.util.ArrayList;
+import java.util.Scanner;
+
+import z.texas.game.Card;
+import z.texas.game.Player;
+import z.texas.server.Server;
 
 public class Texas {
+	@SuppressWarnings("resource")
 	public static void main(String[] args) {
-		initDealer();
-		new Server().start();
-		Client client = new Client();
-		if(client.connect("127.0.0.1", 8080))
-			System.out.println("连接成功");
-		client.send("test");
-	}
-
-	private static void initDealer() {
-		Dealer dealer = new Dealer();
-		String suit;
-		ArrayList<Card> hands = dealer.dealCard(2);
-		ArrayList<Card> flop = dealer.dealCard(3);
-		ArrayList<Card> turn = dealer.dealCard(1);
-		ArrayList<Card> river = dealer.dealCard(1);
-		for (int i = 0; i < 2; i++) {
-			suit = querySuit(hands.get(i).getSuit());
-			System.out.println("第" + (i+1) + "张手牌数字是：" + hands.get(i).getNum());
-			System.out.println("第" + (i+1) + "张手牌花色是：" + suit);
+		Server server = new Server();
+		server.start();
+		System.out.println("输入start开始游戏：");
+		Scanner in = new Scanner(System.in);
+		while (true) {
+			String str = in.nextLine();
+			if (str.equals("quit")) {
+				break;
+			}
+			if (str.equals("start")) {
+				Client client = new Client();
+				Player player = new Player(client);
+				client.connect("127.0.0.1", 8000);
+				for (int i = 0; i < 52; i++) {
+					player.takeCard();
+					System.out.println("第" + (i + 1) + "张牌是"
+							+ querySuit(player.getHands().get(i).getSuit())
+							+ player.getHands().get(i).getNum());
+				}
+			}
 		}
-		for (int i = 0; i < 3; i++) {
-			suit = querySuit(flop.get(i).getSuit());
-			System.out.println("第" + (i+1) + "张公共牌数字是：" + flop.get(i).getNum());
-			System.out.println("第" + (i+1) + "张公共牌花色是：" + suit);
-		}
-
-		suit = querySuit(turn.get(0).getSuit());
-		System.out.println("第" + (4) + "张公共牌数字是：" + turn.get(0).getNum());
-		System.out.println("第" + (4) + "张公共牌花色是：" + suit);
-
-		suit = querySuit(river.get(0).getSuit());
-		System.out.println("第" + (5) + "张公共牌数字是：" + river.get(0).getNum());
-		System.out.println("第" + (5) + "张公共牌花色是：" + suit);
-		
+		System.out.println("结束");
+		server.setStop(true);
 	}
 
 	private static String querySuit(int suitIndex) {
