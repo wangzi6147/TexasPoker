@@ -1,34 +1,61 @@
 package z.texas;
 
-import java.util.ArrayList;
 import java.util.Scanner;
+
+import com.google.gson.Gson;
 
 import z.texas.game.Card;
 import z.texas.game.Player;
 import z.texas.server.Server;
 
 public class Texas {
+	private static Server server;
+	private static Player player;
+	private static Client client;
+	private static Gson gson;
+	private static TexasBean texasBean;
+
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
-		Server server = new Server();
-		server.start();
-		System.out.println("输入start开始游戏：");
+		System.out.println("输入命令：");
 		Scanner in = new Scanner(System.in);
 		while (true) {
 			String str = in.nextLine();
-			if (str.equals("quit")) {
+			switch (str) {
+			case "startserver":
+				server = new Server();
+				server.start();
+				System.out.println("服务器已启动");
+				break;
+			case "connect":
+				client = new Client();
+				player = new Player(client);
+				if(client.connect("127.0.0.1", 8000)){
+					System.out.println("连接成功");
+				}else {
+					System.out.println("连接失败");
+				}
+				break;
+			case "start":
+				gson = new Gson();
+				texasBean = new TexasBean();
+				texasBean.setState("ready");
+				String json = gson.toJson(texasBean);
+				String result = client.send(json);
+				texasBean = gson.fromJson(result, TexasBean.class);
+				System.out.println(texasBean.getState());
+//				for (int i = 0; i < 52; i++) {
+//					player.takeCard();
+//					System.out.println("第" + (i + 1) + "张牌是"
+//							+ querySuit(player.getHands().get(i).getSuit())
+//							+ player.getHands().get(i).getNum());
+//				}
+				break;
+			default:
 				break;
 			}
-			if (str.equals("start")) {
-				Client client = new Client();
-				Player player = new Player(client);
-				client.connect("127.0.0.1", 8000);
-				for (int i = 0; i < 52; i++) {
-					player.takeCard();
-					System.out.println("第" + (i + 1) + "张牌是"
-							+ querySuit(player.getHands().get(i).getSuit())
-							+ player.getHands().get(i).getNum());
-				}
+			if (str.equals("quit")) {
+				break;
 			}
 		}
 		System.out.println("结束");

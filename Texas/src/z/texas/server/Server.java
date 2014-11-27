@@ -12,18 +12,22 @@ public class Server extends Thread{
 
 	@Override
 	public void run(){
+		SocketManager socketManager = new SocketManager();
+		Dealer dealer = new Dealer();
 		try {
 			serverSocket = new ServerSocket(8000);
-			Dealer dealer = new Dealer();
 			while(!isStop){
 				Socket socket = serverSocket.accept();
-				new Thread(new Task(socket, dealer)).start();
+				Task task = new Task(socket, dealer, socketManager);
+				socketManager.add(task);
+				new Thread(task).start();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally{
 			try {
 				serverSocket.close();
+				socketManager.closeAll();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
