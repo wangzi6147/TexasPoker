@@ -1,8 +1,11 @@
-package z.texas.game;
+package z.texas.client;
 
 import java.util.ArrayList;
 
-import z.texas.Client;
+import z.texas.commons.Card;
+
+
+
 
 public class Player {
 	private Client client;

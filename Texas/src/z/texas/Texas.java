@@ -4,8 +4,10 @@ import java.util.Scanner;
 
 import com.google.gson.Gson;
 
-import z.texas.game.Card;
-import z.texas.game.Player;
+import z.texas.client.Client;
+import z.texas.client.Player;
+import z.texas.commons.Card;
+import z.texas.commons.TexasBean;
 import z.texas.server.Server;
 
 public class Texas {
@@ -36,7 +38,7 @@ public class Texas {
 					System.out.println("连接失败");
 				}
 				break;
-			case "start":
+			case "ready":
 				gson = new Gson();
 				texasBean = new TexasBean();
 				texasBean.setState("ready");
@@ -52,6 +54,7 @@ public class Texas {
 //				}
 				break;
 			default:
+				System.out.println("输入错误");
 				break;
 			}
 			if (str.equals("quit")) {

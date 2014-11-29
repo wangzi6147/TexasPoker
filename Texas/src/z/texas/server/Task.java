@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import z.texas.commons.Card;
+import z.texas.commons.TexasBean;
+
 import com.google.gson.Gson;
 
-import z.texas.TexasBean;
-import z.texas.game.Card;
-import z.texas.game.Dealer;
 
 public class Task implements Runnable {
 
@@ -19,6 +19,9 @@ public class Task implements Runnable {
 	private boolean isStop;
 	private SocketManager socketManager;
 	private TexasBean texasBean;
+	private Gson gson;
+	private DataInputStream dis;
+	private DataOutputStream dos;
 
 	public Task(Socket socket, Dealer dealer, SocketManager socketManager) {
 		this.socket = socket;
@@ -29,36 +32,23 @@ public class Task implements Runnable {
 	@Override
 	public void run() {
 		try {
-			Gson gson = new Gson();
+			gson = new Gson();
 			isStop = false;
+			dis = new DataInputStream(
+					socket.getInputStream());
+			dos = new DataOutputStream(
+					socket.getOutputStream());
 			while (!isStop) {
-				DataInputStream dis = new DataInputStream(
-						socket.getInputStream());
-				DataOutputStream dos = new DataOutputStream(
-						socket.getOutputStream());
 				setTexasBean(gson.fromJson(dis.readUTF(), TexasBean.class));
 				switch (getTexasBean().getState()) {
 				case "ready":
-					while (true) {
-						if(socketManager.getReadyNum()>0){
-							break;
-						}
+					if(socketManager.allReady()){
+						socketManager.allStart();
 					}
-					getTexasBean().setState("start");
-					dos.writeUTF(gson.toJson(getTexasBean()));
-					dos.flush();
 					break;
 				default:
 					break;
 				}
-//				if (dis.readUTF().equals("takeCard")) {
-//					ArrayList<Card> cards = dealer.dealCard(1);
-//					DataOutputStream dos = new DataOutputStream(
-//							socket.getOutputStream());
-//					dos.writeUTF(cards.get(0).getNum() + ","
-//							+ cards.get(0).getSuit());
-//					dos.flush();
-//				}
 			}
 			socket.close();
 		} catch (IOException e) {
@@ -77,6 +67,23 @@ public class Task implements Runnable {
 
 	public void setTexasBean(TexasBean texasBean) {
 		this.texasBean = texasBean;
+	}
+
+	public void gameStart() {
+		getTexasBean().setState("start");
+		try {
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			dos.writeUTF(gson.toJson(getTexasBean()));
+			dos.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -1,7 +1,11 @@
-package z.texas.game;
+package z.texas.server;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import z.texas.commons.Card;
+
+
 
 
 public class Dealer {

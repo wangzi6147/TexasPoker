@@ -18,15 +18,21 @@ public class SocketManager {
 			tasks.get(i).setStop(true);
 		}
 	}
-	
-	public int getReadyNum(){
-		int num = 0;
+
+	public boolean allReady() {
+		if(tasks.size()<1)
+			return false;
 		for (int i = 0; i < tasks.size(); i++) {
-			if(tasks.get(i).getTexasBean().getState().equals("ready")){
-				num++;
+			if(!tasks.get(i).getTexasBean().getState().equals("ready")){
+				return false;
 			}
 		}
-		return num;
-		
+		return true;
+	}
+
+	public void allStart() {
+		for (int i = 0; i < tasks.size(); i++) {
+			tasks.get(i).gameStart();
+		}
 	}
 }

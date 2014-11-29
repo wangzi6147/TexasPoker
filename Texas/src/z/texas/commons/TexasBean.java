@@ -1,10 +1,11 @@
-package z.texas;
+package z.texas.commons;
 
 public class TexasBean {
 	private String state;
 	private int num;
 	private int suit;
 	private int money;
+	private Card[] cards;
 	public String getState() {
 		return state;
 	}
@@ -28,5 +29,11 @@ public class TexasBean {
 	}
 	public void setMoney(int money) {
 		this.money = money;
+	}
+	public Card[] getCards() {
+		return cards;
+	}
+	public void setCards(Card[] cards) {
+		this.cards = cards;
 	}
 }
