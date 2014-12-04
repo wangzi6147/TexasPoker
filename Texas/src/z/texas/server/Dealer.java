@@ -26,7 +26,7 @@ public class Dealer {
 		pile = new ArrayList<CardBean>();
 		position = new int[MAX_NUM];
 		for (int i = 0; i < MAX_NUM; i++) {
-			curBean.getPlayers().add(new PlayerBean());
+			curBean.getOthers().add(new PlayerBean());
 			position[i] = 0;
 		}
 		for (int i = 0; i < 4; i++) {
@@ -49,28 +49,24 @@ public class Dealer {
 
 	public void parse(String json, String address) {
 		texasBean = gson.fromJson(json, TexasBean.class);
-		texasBean.getPlayers().get(texasBean.getPos()).setAddress(address);
+		texasBean.getPlayer().setAddress(address);
 		int emptyPos = getEmptyPos();
-		switch (texasBean.getPlayers().get(texasBean.getPos()).getState()) {
+		switch (texasBean.getPlayer().getState()) {
 		case "connect":
 			if (emptyPos == -1) {
-				curBean.setPos(-1);
-				taskManager.send(gson.toJson(curBean), texasBean.getPlayers()
-						.get(texasBean.getPos()).getAddress());
+				texasBean.getPlayer().setPos(-1);
+				curBean.setPlayer(texasBean.getPlayer());
+				send();
 				break;
 			}
-			curBean.getPlayers().set(emptyPos,
-					texasBean.getPlayers().get(texasBean.getPos()));
-			curBean.setPos(emptyPos);
-			taskManager
-					.send(gson.toJson(curBean),
-							texasBean.getPlayers().get(texasBean.getPos())
-									.getAddress());
+			texasBean.getPlayer().setPos(emptyPos);
+			curBean.setPlayer(texasBean.getPlayer());
+			curBean.getOthers().set(emptyPos, texasBean.getPlayer());
+			send();
 			position[emptyPos] = 1;
 			break;
 		case "ready":
-			curBean.getPlayers().set(texasBean.getPos(),
-					texasBean.getPlayers().get(texasBean.getPos()));
+			curBean.getOthers().set(texasBean.getPlayer().getPos(), texasBean.getPlayer());
 			if (allReady()) {
 				allStart();
 			}
@@ -80,22 +76,25 @@ public class Dealer {
 		}
 	}
 
+	private void send() {
+		taskManager.send(gson.toJson(curBean), curBean.getPlayer().getAddress());
+	}
+
 	private void allStart() {
-		for(int i = 0; i<curBean.getPlayers().size(); i++){
-			PlayerBean playerBean = curBean.getPlayers().get(i);
+		for(int i = 0; i<curBean.getOthers().size(); i++){
+			PlayerBean playerBean = curBean.getOthers().get(i);
 			if (playerBean.getState() != null) {
 				playerBean.setState("start");
-				playerBean.setCards(dealCard(2));
-				curBean.setPos(i);
-				taskManager.send(gson.toJson(curBean), texasBean.getPlayers()
-						.get(texasBean.getPos()).getAddress());
+				playerBean.setHands(dealCard(2));
+				curBean.setPlayer(playerBean);
+				send();
 			}
 		}
 	}
 
 	private boolean allReady() {
 		int playerNum = 0;
-		for (PlayerBean playerBean : curBean.getPlayers()) {
+		for (PlayerBean playerBean : curBean.getOthers()) {
 			String state = playerBean.getState();
 			if (state != null && state.equals("ready"))
 				playerNum++;

@@ -88,8 +88,8 @@ public class TexasUI {
 	public void showCards(PlayerBean playerBean) {
 		for (int i = 0; i < 2; i++) {
 			System.out
-					.println(querySuit(playerBean.getCards().get(i).getSuit())
-							+ playerBean.getCards().get(i).getNum());
+					.println(querySuit(playerBean.getHands().get(i).getSuit())
+							+ playerBean.getHands().get(i).getNum());
 		}
 	}
 }

@@ -29,13 +29,10 @@ public class Player {
 	}
 
 	public boolean connect(String host, String name, int port) {
-		texasBean.setPos(0);
 		PlayerBean playerBean = new PlayerBean();
 		playerBean.setName(name);
 		playerBean.setState("connect");
-		ArrayList<PlayerBean> playerBeans = new ArrayList<PlayerBean>();
-		playerBeans.add(playerBean);
-		texasBean.setPlayers(playerBeans);
+		texasBean.setPlayer(playerBean);
 		if(client.connect(host, port)){
 			client.send(gson.toJson(texasBean));
 			return true;
@@ -44,19 +41,17 @@ public class Player {
 	}
 
 	public void ready() {
-		texasBean.getPlayers().get(texasBean.getPos()).setState("ready");
+		texasBean.getPlayer().setState("ready");
 		String json = gson.toJson(texasBean);
 		client.send(json);
 	}
 
 	public void parse(String str) {
 		texasBean = gson.fromJson(str, TexasBean.class);
-		if(texasBean.getPos()==-1){
-			texasUI.print("旁观");
-			return;
-		}
-		PlayerBean playerBean = texasBean.getPlayers().get(texasBean.getPos());
+		PlayerBean playerBean = texasBean.getPlayer();
 		switch (playerBean.getState()) {
+		case "watch":
+			texasUI.print("旁观");
 		case "start":
 			texasUI.showCards(playerBean);
 			break;

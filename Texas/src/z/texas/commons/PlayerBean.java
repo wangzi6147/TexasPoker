@@ -8,10 +8,11 @@ public class PlayerBean {
 	private String name;
 	private int money;
 	private int bet;
-	private ArrayList<CardBean> cards;
+	private ArrayList<CardBean> hands;
+	private int pos;
 	
 	public PlayerBean(){
-		cards = new ArrayList<CardBean>();
+		setHands(new ArrayList<CardBean>());
 	}
 	public String getState() {
 		return state;
@@ -24,12 +25,6 @@ public class PlayerBean {
 	}
 	public void setMoney(int money) {
 		this.money = money;
-	}
-	public ArrayList<CardBean> getCards() {
-		return cards;
-	}
-	public void setCards(ArrayList<CardBean> cards) {
-		this.cards = cards;
 	}
 	public String getName() {
 		return name;
@@ -48,5 +43,17 @@ public class PlayerBean {
 	}
 	public void setAddress(String address) {
 		this.address = address;
+	}
+	public int getPos() {
+		return pos;
+	}
+	public void setPos(int pos) {
+		this.pos = pos;
+	}
+	public ArrayList<CardBean> getHands() {
+		return hands;
+	}
+	public void setHands(ArrayList<CardBean> hands) {
+		this.hands = hands;
 	}
 }

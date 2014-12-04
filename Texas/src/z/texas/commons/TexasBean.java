@@ -3,23 +3,15 @@ package z.texas.commons;
 import java.util.ArrayList;
 
 public class TexasBean {
-	private ArrayList<PlayerBean> players;
+	private PlayerBean player;
+	private ArrayList<PlayerBean> others;
 	private ArrayList<CardBean> flops;
 	private CardBean turn;
 	private CardBean river;
-	private int pos;
 
 	public TexasBean(){
-		players = new ArrayList<PlayerBean>();
+		others = new ArrayList<PlayerBean>();
 		flops = new ArrayList<CardBean>();
-	}
-	
-	public ArrayList<PlayerBean> getPlayers() {
-		return players;
-	}
-
-	public void setPlayers(ArrayList<PlayerBean> players) {
-		this.players = players;
 	}
 	
 	public ArrayList<CardBean> getFlops() {
@@ -46,12 +38,20 @@ public class TexasBean {
 		this.river = river;
 	}
 
-	public int getPos() {
-		return pos;
+	public ArrayList<PlayerBean> getOthers() {
+		return others;
 	}
 
-	public void setPos(int pos) {
-		this.pos = pos;
+	public void setOthers(ArrayList<PlayerBean> others) {
+		this.others = others;
+	}
+
+	public PlayerBean getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(PlayerBean player) {
+		this.player = player;
 	}
 
 }
