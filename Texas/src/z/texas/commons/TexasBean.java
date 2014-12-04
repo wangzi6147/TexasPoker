@@ -1,39 +1,57 @@
 package z.texas.commons;
 
+import java.util.ArrayList;
+
 public class TexasBean {
-	private String state;
-	private int num;
-	private int suit;
-	private int money;
-	private Card[] cards;
-	public String getState() {
-		return state;
+	private ArrayList<PlayerBean> players;
+	private ArrayList<CardBean> flops;
+	private CardBean turn;
+	private CardBean river;
+	private int pos;
+
+	public TexasBean(){
+		players = new ArrayList<PlayerBean>();
+		flops = new ArrayList<CardBean>();
 	}
-	public void setState(String state) {
-		this.state = state;
+	
+	public ArrayList<PlayerBean> getPlayers() {
+		return players;
 	}
-	public int getNum() {
-		return num;
+
+	public void setPlayers(ArrayList<PlayerBean> players) {
+		this.players = players;
 	}
-	public void setNum(int num) {
-		this.num = num;
+	
+	public ArrayList<CardBean> getFlops() {
+		return flops;
 	}
-	public int getSuit() {
-		return suit;
+
+	public void setFlops(ArrayList<CardBean> flops) {
+		this.flops = flops;
 	}
-	public void setSuit(int suit) {
-		this.suit = suit;
+
+	public CardBean getTurn() {
+		return turn;
 	}
-	public int getMoney() {
-		return money;
+
+	public void setTurn(CardBean turn) {
+		this.turn = turn;
 	}
-	public void setMoney(int money) {
-		this.money = money;
+
+	public CardBean getRiver() {
+		return river;
 	}
-	public Card[] getCards() {
-		return cards;
+
+	public void setRiver(CardBean river) {
+		this.river = river;
 	}
-	public void setCards(Card[] cards) {
-		this.cards = cards;
+
+	public int getPos() {
+		return pos;
 	}
+
+	public void setPos(int pos) {
+		this.pos = pos;
+	}
+
 }

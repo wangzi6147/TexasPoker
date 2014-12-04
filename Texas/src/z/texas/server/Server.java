@@ -11,14 +11,14 @@ public class Server extends Thread{
 
 	@Override
 	public void run(){
-		SocketManager socketManager = new SocketManager();
-		Dealer dealer = new Dealer();
+		TaskManager taskManager = new TaskManager();
+		Dealer dealer = new Dealer(taskManager);
 		try {
 			serverSocket = new ServerSocket(8000);
 			while(!isStop){
 				Socket socket = serverSocket.accept();
-				Task task = new Task(socket, dealer, socketManager);
-				socketManager.add(task);
+				Task task = new Task(socket, dealer, taskManager);
+				taskManager.add(task, socket.getInetAddress().getHostAddress());
 				new Thread(task).start();
 			}
 		} catch (IOException e) {
@@ -26,7 +26,7 @@ public class Server extends Thread{
 		} finally{
 			try {
 				serverSocket.close();
-				socketManager.closeAll();
+				taskManager.closeAll();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

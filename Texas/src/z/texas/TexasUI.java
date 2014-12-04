@@ -6,78 +6,72 @@ import com.google.gson.Gson;
 
 import z.texas.client.Client;
 import z.texas.client.Player;
-import z.texas.commons.Card;
+import z.texas.commons.CardBean;
+import z.texas.commons.PlayerBean;
 import z.texas.commons.TexasBean;
 import z.texas.server.Server;
 
-public class Texas {
+public class TexasUI {
 	private static Server server;
 	private static Player player;
-	private static Client client;
-	private static Gson gson;
-	private static TexasBean texasBean;
+	private boolean isServerStart;
 
-	@SuppressWarnings("resource")
 	public static void main(String[] args) {
+		new TexasUI().start();
+	}
+
+	private void start() {
+		isServerStart = false;
 		System.out.println("输入命令：");
 		Scanner in = new Scanner(System.in);
 		while (true) {
 			String str = in.nextLine();
+			if (str.equals("quit")) {
+				break;
+			}
 			switch (str) {
 			case "startserver":
 				server = new Server();
 				server.start();
+				isServerStart = true;
 				System.out.println("服务器已启动");
 				break;
 			case "connect":
-				client = new Client();
-				player = new Player(client);
-				if(client.connect("127.0.0.1", 8000)){
+				player = new Player(this);
+				if (player.connect("127.0.0.1", "wangzi6147", 8000)) {
 					System.out.println("连接成功");
-				}else {
+				} else {
 					System.out.println("连接失败");
 				}
 				break;
 			case "ready":
-				gson = new Gson();
-				texasBean = new TexasBean();
-				texasBean.setState("ready");
-				String json = gson.toJson(texasBean);
-				String result = client.send(json);
-				texasBean = gson.fromJson(result, TexasBean.class);
-				System.out.println(texasBean.getState());
-//				for (int i = 0; i < 52; i++) {
-//					player.takeCard();
-//					System.out.println("第" + (i + 1) + "张牌是"
-//							+ querySuit(player.getHands().get(i).getSuit())
-//							+ player.getHands().get(i).getNum());
-//				}
+				player.ready();
+				System.out.println("已准备");
 				break;
 			default:
 				System.out.println("输入错误");
 				break;
 			}
-			if (str.equals("quit")) {
-				break;
-			}
 		}
 		System.out.println("结束");
-		server.setStop(true);
+		player.quit();
+		if (isServerStart)
+			server.setStop(true);
 	}
 
 	private static String querySuit(int suitIndex) {
 		String suit;
 		switch (suitIndex) {
-		case Card.SUIT_CLUBS:
+		case CardBean.SUIT_CLUBS:
 			suit = "梅花";
 			break;
-		case Card.SUIT_DIAMONDS:
+		case CardBean.SUIT_DIAMONDS:
 			suit = "方块";
 			break;
-		case Card.SUIT_HEARTS:
+		case CardBean.SUIT_HEARTS:
 			suit = "红桃";
 			break;
-		case Card.SUIT_SPADES:
+		case CardBean.SUIT_SPADES:
 			suit = "黑桃";
 			break;
 		default:
@@ -85,5 +79,17 @@ public class Texas {
 			break;
 		}
 		return suit;
+	}
+
+	public void print(String string) {
+		System.out.println(string);
+	}
+
+	public void showCards(PlayerBean playerBean) {
+		for (int i = 0; i < 2; i++) {
+			System.out
+					.println(querySuit(playerBean.getCards().get(i).getSuit())
+							+ playerBean.getCards().get(i).getNum());
+		}
 	}
 }
