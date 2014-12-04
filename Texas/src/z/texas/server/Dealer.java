@@ -37,7 +37,7 @@ public class Dealer {
 	}
 
 	// 发牌
-	public ArrayList<CardBean> dealCard(int num) {
+	private ArrayList<CardBean> dealCard(int num) {
 		ArrayList<CardBean> cards = new ArrayList<CardBean>();
 		for (int i = 0; i < num; i++) {
 			int index = new Random().nextInt(pile.size());
@@ -81,10 +81,12 @@ public class Dealer {
 	}
 
 	private void allStart() {
-		for (PlayerBean playerBean : curBean.getPlayers()) {
+		for(int i = 0; i<curBean.getPlayers().size(); i++){
+			PlayerBean playerBean = curBean.getPlayers().get(i);
 			if (playerBean.getState() != null) {
 				playerBean.setState("start");
 				playerBean.setCards(dealCard(2));
+				curBean.setPos(i);
 				taskManager.send(gson.toJson(curBean), texasBean.getPlayers()
 						.get(texasBean.getPos()).getAddress());
 			}
