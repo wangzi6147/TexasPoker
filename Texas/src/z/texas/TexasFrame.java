@@ -40,6 +40,7 @@ public class TexasFrame extends JFrame {
 
 			public void run() {
 				try {
+					//test
 					TexasFrame frame = new TexasFrame();
 					frame.setVisible(true);
 				} catch (Exception e) {
