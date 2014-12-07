@@ -8,6 +8,9 @@ public class TexasBean {
 	private ArrayList<CardBean> flops;
 	private CardBean turn;
 	private CardBean river;
+	private int maxBet;
+	private int bigBlind;
+	private int bankPos;
 
 	public TexasBean(){
 		others = new ArrayList<PlayerBean>();
@@ -52,6 +55,30 @@ public class TexasBean {
 
 	public void setPlayer(PlayerBean player) {
 		this.player = player;
+	}
+
+	public int getMaxBet() {
+		return maxBet;
+	}
+
+	public void setMaxBet(int maxBet) {
+		this.maxBet = maxBet;
+	}
+
+	public int getBigBlind() {
+		return bigBlind;
+	}
+
+	public void setBigBlind(int bigBlind) {
+		this.bigBlind = bigBlind;
+	}
+
+	public int getBankPos() {
+		return bankPos;
+	}
+
+	public void setBankPos(int bankPos) {
+		this.bankPos = bankPos;
 	}
 
 }

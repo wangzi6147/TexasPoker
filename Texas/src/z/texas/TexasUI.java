@@ -14,14 +14,12 @@ import z.texas.server.Server;
 public class TexasUI {
 	private static Server server;
 	private static Player player;
-	private boolean isServerStart;
 
-	public static void main(String[] args) {
-		new TexasUI().start();
-	}
+//	public static void main(String[] args) {
+//		new TexasUI().start();
+//	}
 
 	private void start() {
-		isServerStart = false;
 		System.out.println("输入命令：");
 		Scanner in = new Scanner(System.in);
 		while (true) {
@@ -33,12 +31,12 @@ public class TexasUI {
 			case "startserver":
 				server = new Server();
 				server.start();
-				isServerStart = true;
 				System.out.println("服务器已启动");
 				break;
 			case "connect":
-				player = new Player(this);
-				if (player.connect("127.0.0.1", "wangzi6147", 8000)) {
+				//player = new Player(this);
+				System.out.println("input name:");
+				if (player.connect("127.0.0.1", in.nextLine(), 8000)) {
 					System.out.println("连接成功");
 				} else {
 					System.out.println("连接失败");
@@ -48,14 +46,18 @@ public class TexasUI {
 				player.ready();
 				System.out.println("已准备");
 				break;
+			case "call":
+				player.call();
+				break;
 			default:
 				System.out.println("输入错误");
 				break;
 			}
 		}
 		System.out.println("结束");
-		player.quit();
-		if (isServerStart)
+		if(player!=null)
+			player.quit();
+		if(server!=null)
 			server.setStop(true);
 	}
 

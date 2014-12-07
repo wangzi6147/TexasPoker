@@ -28,9 +28,10 @@ public class TaskManager {
 		}
 	}
 	
-	public void send(String json, String address) {
+	public void send(String json, String address, String name) {
 		for(Task task : tasks.get(address)){
-			task.send(json);
+			if(task.getName().equals(name))
+				task.send(json);
 		}
 	}
 }

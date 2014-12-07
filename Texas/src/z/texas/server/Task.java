@@ -18,6 +18,8 @@ public class Task implements Runnable {
 	private TaskManager taskManager;
 	private DataInputStream dis;
 	private DataOutputStream dos;
+	//测试时用
+	private String name;
 
 	public Task(Socket socket, Dealer dealer, TaskManager taskManager) {
 		this.socket = socket;
@@ -34,7 +36,7 @@ public class Task implements Runnable {
 			dos = new DataOutputStream(
 					socket.getOutputStream());
 			while (!isStop) {
-				dealer.parse(dis.readUTF(), socket.getInetAddress().getHostAddress());
+				dealer.parse(dis.readUTF(), socket.getInetAddress().getHostAddress(), this);
 			}
 			socket.close();
 		} catch (IOException e) {
@@ -55,6 +57,14 @@ public class Task implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }
