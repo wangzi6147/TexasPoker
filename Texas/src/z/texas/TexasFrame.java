@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import z.texas.client.Player;
 import z.texas.commons.CardBean;
 import z.texas.commons.PlayerBean;
+import z.texas.commons.TexasBean;
 import z.texas.server.Server;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -31,6 +32,12 @@ public class TexasFrame extends JFrame {
 	private JLabel lbl_card_1;
 	private JLabel lbl_card_2;
 	private JTextField txt_bet;
+	private JLabel lbl_p2_card_1;
+	private JLabel lbl_p2_card_2;
+	private JLabel lbl_p2_bet;
+	private JLabel lbl_p2_money;
+	private JLabel lbl_money;
+	private JLabel lbl_bet;
 
 	/**
 	 * Launch the application.
@@ -69,7 +76,7 @@ public class TexasFrame extends JFrame {
 		lbl_state.setHorizontalAlignment(SwingConstants.CENTER);
 		lbl_state.setBounds(10, 10, 298, 15);
 		contentPane.add(lbl_state);
-		
+
 		txtAddress = new JTextField();
 		txtAddress.setBounds(10, 74, 93, 21);
 		contentPane.add(txtAddress);
@@ -98,10 +105,11 @@ public class TexasFrame extends JFrame {
 
 		JButton btnNewButton_1 = new JButton("链接");
 		btnNewButton_1.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (player.connect(txtAddress.getText(), textField_name.getText(),
+				if (player.connect(txtAddress.getText(),
+						textField_name.getText(),
 						Integer.parseInt(textField_port.getText()))) {
 					lbl_state.setText("连接成功");
 				} else {
@@ -115,15 +123,15 @@ public class TexasFrame extends JFrame {
 		JButton btnNewButton_2 = new JButton("离开");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(player!=null)
+				if (player != null)
 					player.quit();
-				if(server!=null)
+				if (server != null)
 					server.setStop(true);
 			}
 		});
 		btnNewButton_2.setBounds(10, 386, 93, 23);
 		contentPane.add(btnNewButton_2);
-		
+
 		btnNewButton_3 = new JButton("准备");
 		btnNewButton_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -133,7 +141,7 @@ public class TexasFrame extends JFrame {
 		});
 		btnNewButton_3.setBounds(10, 136, 93, 23);
 		contentPane.add(btnNewButton_3);
-		
+
 		btnCall = new JButton("call");
 		btnCall.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -142,89 +150,94 @@ public class TexasFrame extends JFrame {
 		});
 		btnCall.setBounds(574, 386, 93, 23);
 		contentPane.add(btnCall);
-		
+
 		lbl_card_1 = new JLabel("card_1");
 		lbl_card_1.setBounds(307, 328, 60, 23);
 		contentPane.add(lbl_card_1);
-		
+
 		lbl_card_2 = new JLabel("card_2");
 		lbl_card_2.setBounds(377, 328, 60, 23);
 		contentPane.add(lbl_card_2);
-		
-		JLabel lbl_money = new JLabel("money");
+
+		lbl_money = new JLabel("money");
 		lbl_money.setBounds(307, 365, 60, 23);
 		contentPane.add(lbl_money);
-		
-		JLabel lbl_bet = new JLabel("bet");
+
+		lbl_bet = new JLabel("bet");
 		lbl_bet.setBounds(377, 365, 60, 23);
 		contentPane.add(lbl_bet);
-		
-		JLabel lbl_p1_card_1 = new JLabel("card_1");
-		lbl_p1_card_1.setBounds(307, 41, 60, 23);
-		contentPane.add(lbl_p1_card_1);
-		
-		JLabel lbl_p1_card_2 = new JLabel("card_2");
-		lbl_p1_card_2.setBounds(377, 41, 60, 23);
-		contentPane.add(lbl_p1_card_2);
-		
-		JLabel lbl_p2_bet = new JLabel("bet");
+
+		lbl_p2_card_1 = new JLabel("card_1");
+		lbl_p2_card_1.setBounds(307, 41, 60, 23);
+		contentPane.add(lbl_p2_card_1);
+
+		lbl_p2_card_2 = new JLabel("card_2");
+		lbl_p2_card_2.setBounds(377, 41, 60, 23);
+		contentPane.add(lbl_p2_card_2);
+
+		lbl_p2_bet = new JLabel("bet");
 		lbl_p2_bet.setBounds(377, 78, 60, 23);
 		contentPane.add(lbl_p2_bet);
-		
-		JLabel lbl_p2_money = new JLabel("money");
+
+		lbl_p2_money = new JLabel("money");
 		lbl_p2_money.setBounds(307, 78, 60, 23);
 		contentPane.add(lbl_p2_money);
-		
+
 		JLabel lbl_flop_1 = new JLabel("flop_1");
 		lbl_flop_1.setBounds(214, 174, 60, 23);
 		contentPane.add(lbl_flop_1);
-		
+
 		JLabel lbl_flop_2 = new JLabel("flop_2");
 		lbl_flop_2.setBounds(295, 174, 60, 23);
 		contentPane.add(lbl_flop_2);
-		
+
 		JLabel lbl_flop_3 = new JLabel("flop_3");
 		lbl_flop_3.setBounds(377, 174, 60, 23);
 		contentPane.add(lbl_flop_3);
-		
+
 		JLabel lbl_turn = new JLabel("turn");
 		lbl_turn.setBounds(463, 174, 60, 23);
 		contentPane.add(lbl_turn);
-		
+
 		JLabel lbl_river = new JLabel("river");
 		lbl_river.setBounds(548, 174, 60, 23);
 		contentPane.add(lbl_river);
-		
+
 		JButton btnCheck = new JButton("check");
+		btnCheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				player.check();
+			}
+		});
 		btnCheck.setBounds(574, 354, 93, 23);
 		contentPane.add(btnCheck);
-		
+
 		JButton btnRaise = new JButton("raise");
 		btnRaise.setBounds(574, 321, 93, 23);
 		contentPane.add(btnRaise);
-		
+
 		txt_bet = new JTextField();
 		txt_bet.setBounds(574, 290, 93, 21);
 		contentPane.add(txt_bet);
 		txt_bet.setColumns(10);
-		
+
 		JButton btnFold = new JButton("fold");
 		btnFold.setBounds(471, 386, 93, 23);
 		contentPane.add(btnFold);
-		
+
 	}
-	
+
 	public void print(String string) {
 		lbl_state.setText(string);
 	}
-	
-	public void showCards(PlayerBean playerBean) {
-			lbl_card_1.setText(querySuit(playerBean.getHands().get(0).getSuit())
-							+ playerBean.getHands().get(0).getNum());
-			lbl_card_2.setText(querySuit(playerBean.getHands().get(1).getSuit())
-					+ playerBean.getHands().get(1).getNum());
+
+	private void showCards(PlayerBean playerBean) {
+		lbl_card_1.setText(querySuit(playerBean.getHands().get(0).getSuit())
+				+ playerBean.getHands().get(0).getNum());
+		lbl_card_2.setText(querySuit(playerBean.getHands().get(1).getSuit())
+				+ playerBean.getHands().get(1).getNum());
 	}
-	
+
 	private static String querySuit(int suitIndex) {
 		String suit;
 		switch (suitIndex) {
@@ -245,5 +258,55 @@ public class TexasFrame extends JFrame {
 			break;
 		}
 		return suit;
+	}
+
+	public void showPlayers(TexasBean texasBean) {
+		int pos = texasBean.getPlayer().getPos();
+		showCards(texasBean.getPlayer());
+		lbl_money.setText(texasBean.getPlayer().getMoney() + "");
+		lbl_bet.setText(texasBean.getPlayer().getBet() + "");
+		for (int i = pos + 1; i < texasBean.getMaxPlayerNum(); i++) {
+			String state = texasBean.getOthers().get(i).getState();
+			if (state != null) {
+				if (state.equals("show")) {
+					lbl_p2_card_1.setText(querySuit(texasBean.getOthers()
+							.get(i).getHands().get(0).getSuit())
+							+ texasBean.getOthers().get(i).getHands().get(0)
+									.getNum());
+					lbl_p2_card_2.setText(querySuit(texasBean.getOthers()
+							.get(i).getHands().get(1).getSuit())
+							+ texasBean.getOthers().get(i).getHands().get(1)
+									.getNum());
+				} else {
+					lbl_p2_card_1.setText("card");
+					lbl_p2_card_2.setText("card");
+				}
+				lbl_p2_money.setText(texasBean.getOthers().get(i).getMoney()
+						+ "");
+				lbl_p2_bet.setText(texasBean.getOthers().get(i).getBet() + "");
+			}
+		}
+		
+		for (int i = 0; i < pos; i++) {
+			String state = texasBean.getOthers().get(i).getState();
+			if (state != null) {
+				if (state.equals("show")) {
+					lbl_p2_card_1.setText(querySuit(texasBean.getOthers()
+							.get(i).getHands().get(0).getSuit())
+							+ texasBean.getOthers().get(i).getHands().get(0)
+									.getNum());
+					lbl_p2_card_2.setText(querySuit(texasBean.getOthers()
+							.get(i).getHands().get(1).getSuit())
+							+ texasBean.getOthers().get(i).getHands().get(1)
+									.getNum());
+				} else {
+					lbl_p2_card_1.setText("card");
+					lbl_p2_card_2.setText("card");
+				}
+				lbl_p2_money.setText(texasBean.getOthers().get(i).getMoney()
+						+ "");
+				lbl_p2_bet.setText(texasBean.getOthers().get(i).getBet() + "");
+			}
+		}
 	}
 }

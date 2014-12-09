@@ -11,6 +11,7 @@ public class TexasBean {
 	private int maxBet;
 	private int bigBlind;
 	private int bankPos;
+	private int maxPlayerNum;
 
 	public TexasBean(){
 		others = new ArrayList<PlayerBean>();
@@ -79,6 +80,14 @@ public class TexasBean {
 
 	public void setBankPos(int bankPos) {
 		this.bankPos = bankPos;
+	}
+
+	public int getMaxPlayerNum() {
+		return maxPlayerNum;
+	}
+
+	public void setMaxPlayerNum(int maxPlayerNum) {
+		this.maxPlayerNum = maxPlayerNum;
 	}
 
 }

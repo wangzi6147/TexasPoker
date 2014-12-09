@@ -30,6 +30,7 @@ public class Dealer {
 		gson = new Gson();
 		texasBean = new TexasBean();
 		curBean = new TexasBean();
+		curBean.setMaxPlayerNum(MAX_NUM);
 		pile = new ArrayList<CardBean>();
 		pools = new ArrayList<Integer>();
 		position = new int[MAX_NUM];
@@ -101,6 +102,11 @@ public class Dealer {
 			curBean.getOthers().get(nextPlayerPos).setState("choose");
 			// curBean.setPlayer(curBean.getOthers().get(nextPlayerPos));
 			send();
+			break;
+		case "check":
+			curBean.getOthers().set(texasBean.getPlayer().getPos(), texasBean.getPlayer());
+			
+			break;
 		default:
 			break;
 		}
@@ -129,11 +135,11 @@ public class Dealer {
 				playerBean.setHands(dealCard(2));
 				if (i == smallBlindPos) {
 					playerBean.setBet(oriBlind / 2);
-					playerBean.setMoney(playerBean.getMoney() - oriBlind / 2);
+					playerBean.setMoney(oriMoney - oriBlind / 2);
 					pools.set(0, pools.get(0) + oriBlind / 2);
 				} else if (i == bigBlindPos) {
 					playerBean.setBet(oriBlind);
-					playerBean.setMoney(playerBean.getMoney() - oriBlind);
+					playerBean.setMoney(oriMoney - oriBlind);
 					pools.set(0, pools.get(0) + oriBlind);
 				} else {
 					playerBean.setMoney(oriMoney);

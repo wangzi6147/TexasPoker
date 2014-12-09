@@ -10,7 +10,9 @@ import z.texas.commons.CardBean;
 import z.texas.commons.PlayerBean;
 import z.texas.commons.TexasBean;
 import z.texas.server.Server;
-
+/*
+ * 已废弃
+ */
 public class TexasUI {
 	private static Server server;
 	private static Player player;

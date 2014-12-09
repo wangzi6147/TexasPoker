@@ -55,7 +55,7 @@ public class Player {
 			texasFrame.print("旁观");
 		case "start":
 			texasFrame.print("开始");
-			texasFrame.showCards(playerBean);
+			texasFrame.showPlayers(texasBean);
 			break;
 		case "choose":
 			int beg = texasBean.getMaxBet() - playerBean.getBet();
@@ -69,6 +69,7 @@ public class Player {
 						+ (texasBean.getMaxBet() - playerBean.getBet() + texasBean
 								.getBigBlind()) + ") or fold");
 			}
+			texasFrame.showPlayers(texasBean);
 			break;
 		default:
 			break;
@@ -85,6 +86,12 @@ public class Player {
 				- (texasBean.getMaxBet() - playerBean.getBet()));
 		playerBean.setBet(texasBean.getMaxBet());
 		playerBean.setState("call");
+		texasFrame.showPlayers(texasBean);
+		client.send(gson.toJson(texasBean));
+	}
+
+	public void check() {
+		texasBean.getPlayer().setState("check");
 		client.send(gson.toJson(texasBean));
 	}
 
