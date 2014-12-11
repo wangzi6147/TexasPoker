@@ -12,10 +12,13 @@ public class TexasBean {
 	private int bigBlind;
 	private int bankPos;
 	private int maxPlayerNum;
+	private String tableState;
+	private ArrayList<Integer> pools; // 底池，边池
 
 	public TexasBean(){
 		others = new ArrayList<PlayerBean>();
 		flops = new ArrayList<CardBean>();
+		pools = new ArrayList<Integer>();
 	}
 	
 	public ArrayList<CardBean> getFlops() {
@@ -88,6 +91,22 @@ public class TexasBean {
 
 	public void setMaxPlayerNum(int maxPlayerNum) {
 		this.maxPlayerNum = maxPlayerNum;
+	}
+
+	public String getTableState() {
+		return tableState;
+	}
+
+	public void setTableState(String tableState) {
+		this.tableState = tableState;
+	}
+
+	public ArrayList<Integer> getPools() {
+		return pools;
+	}
+
+	public void setPools(ArrayList<Integer> pools) {
+		this.pools = pools;
 	}
 
 }

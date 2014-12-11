@@ -24,6 +24,8 @@ public class Dealer {
 	private int oriMoney; // 初始金钱
 	private int oriBlind; // 初始大盲注
 	private ArrayList<Integer> pools; // 底池，边池
+	private int nextPlayerPos;
+	private int smallBlindPos;
 
 	public Dealer(TaskManager taskManager) {
 		this.taskManager = taskManager;
@@ -84,32 +86,88 @@ public class Dealer {
 				break;
 			}
 			texasBean.getPlayer().setPos(emptyPos);
-			curBean.getOthers().set(emptyPos, texasBean.getPlayer());
+			updateCurBean();
 			send();
 			position[emptyPos] = 1;
 			break;
 		case "ready":
-			curBean.getOthers().set(texasBean.getPlayer().getPos(),
-					texasBean.getPlayer());
+			updateCurBean();
 			if (allReady()) {
 				allStart();
 			}
 			break;
 		case "call":
-			curBean.getOthers().set(texasBean.getPlayer().getPos(),
-					texasBean.getPlayer());
-			int nextPlayerPos = findNextPlayer(texasBean.getPlayer().getPos());
-			curBean.getOthers().get(nextPlayerPos).setState("choose");
-			// curBean.setPlayer(curBean.getOthers().get(nextPlayerPos));
+			updateCurBean();
+			nextPlayerPos = findNextPlayer(texasBean.getPlayer().getPos());
+			PlayerBean nextPlayer = curBean.getOthers().get(nextPlayerPos);
+			if (nextPlayer.getState().equals("raise")
+					&& nextPlayer.getBet() == curBean.getMaxBet()) {
+				nextTableState();
+			} else {
+				curBean.getOthers().get(nextPlayerPos).setState("choose");
+			}
 			send();
 			break;
 		case "check":
-			curBean.getOthers().set(texasBean.getPlayer().getPos(), texasBean.getPlayer());
-			
+			updateCurBean();
+			int smallBlindPos = findNextPlayer(bankPos);
+			int bigBlindPos = findNextPlayer(smallBlindPos);
+			if (curBean.getTableState().equals("hands")
+					&& texasBean.getPlayer().getPos() == bigBlindPos
+					|| !curBean.getTableState().equals("hands")
+					&& findNextPlayer(texasBean.getPlayer().getPos()) == smallBlindPos) {
+				nextTableState();
+			}else {
+				nextPlayerPos = findNextPlayer(texasBean.getPlayer().getPos());
+				curBean.getOthers().get(nextPlayerPos).setState("choose");
+			}
+			send();
+			break;
+		case "raise":
+			updateCurBean();
+			nextPlayerPos = findNextPlayer(texasBean.getPlayer().getPos());
+			curBean.getOthers().get(nextPlayerPos).setState("choose");
+			send();
 			break;
 		default:
 			break;
 		}
+	}
+
+	private void nextTableState() {
+		switch (curBean.getTableState()) {
+		case "hands":
+			curBean.setTableState("flops");
+			curBean.setFlops(dealCard(3));
+			smallBlindPos = findNextPlayer(bankPos);
+			curBean.getOthers().get(smallBlindPos).setState("choose");
+			break;
+		case "flops":
+			curBean.setTableState("turn");
+			curBean.setTurn(dealCard(1).get(0));
+			smallBlindPos = findNextPlayer(bankPos);
+			curBean.getOthers().get(smallBlindPos).setState("choose");
+			break;
+		case "turn":
+			curBean.setTableState("river");
+			curBean.setRiver(dealCard(1).get(0));
+			smallBlindPos = findNextPlayer(bankPos);
+			curBean.getOthers().get(smallBlindPos).setState("choose");
+			break;
+		case "river":
+			curBean.setTableState("show");
+			smallBlindPos = findNextPlayer(bankPos);
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void updateCurBean() {
+		curBean.getOthers().set(texasBean.getPlayer().getPos(),
+				texasBean.getPlayer());
+		curBean.setPools(texasBean.getPools());
+		curBean.setMaxBet(texasBean.getMaxBet());
 	}
 
 	private void send() {
@@ -149,6 +207,8 @@ public class Dealer {
 				curBean.setBigBlind(oriBlind);
 			}
 		}
+		curBean.setPools(pools);
+		curBean.setTableState("hands");
 		send();
 		for (int i = 0; i < curBean.getOthers().size(); i++) {
 			PlayerBean playerBean = curBean.getOthers().get(i);

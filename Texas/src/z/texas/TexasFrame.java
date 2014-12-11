@@ -38,6 +38,11 @@ public class TexasFrame extends JFrame {
 	private JLabel lbl_p2_money;
 	private JLabel lbl_money;
 	private JLabel lbl_bet;
+	private JLabel lbl_flop_1;
+	private JLabel lbl_flop_2;
+	private JLabel lbl_flop_3;
+	private JLabel lbl_turn;
+	private JLabel lbl_river;
 
 	/**
 	 * Launch the application.
@@ -183,23 +188,23 @@ public class TexasFrame extends JFrame {
 		lbl_p2_money.setBounds(307, 78, 60, 23);
 		contentPane.add(lbl_p2_money);
 
-		JLabel lbl_flop_1 = new JLabel("flop_1");
+		lbl_flop_1 = new JLabel("flop_1");
 		lbl_flop_1.setBounds(214, 174, 60, 23);
 		contentPane.add(lbl_flop_1);
 
-		JLabel lbl_flop_2 = new JLabel("flop_2");
+		lbl_flop_2 = new JLabel("flop_2");
 		lbl_flop_2.setBounds(295, 174, 60, 23);
 		contentPane.add(lbl_flop_2);
 
-		JLabel lbl_flop_3 = new JLabel("flop_3");
+		lbl_flop_3 = new JLabel("flop_3");
 		lbl_flop_3.setBounds(377, 174, 60, 23);
 		contentPane.add(lbl_flop_3);
 
-		JLabel lbl_turn = new JLabel("turn");
+		lbl_turn = new JLabel("turn");
 		lbl_turn.setBounds(463, 174, 60, 23);
 		contentPane.add(lbl_turn);
 
-		JLabel lbl_river = new JLabel("river");
+		lbl_river = new JLabel("river");
 		lbl_river.setBounds(548, 174, 60, 23);
 		contentPane.add(lbl_river);
 
@@ -213,6 +218,11 @@ public class TexasFrame extends JFrame {
 		contentPane.add(btnCheck);
 
 		JButton btnRaise = new JButton("raise");
+		btnRaise.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				player.raise(Integer.parseInt(txt_bet.getText()));
+			}
+		});
 		btnRaise.setBounds(574, 321, 93, 23);
 		contentPane.add(btnRaise);
 
@@ -260,13 +270,39 @@ public class TexasFrame extends JFrame {
 		return suit;
 	}
 
-	public void showPlayers(TexasBean texasBean) {
+	public void showItems(TexasBean texasBean) {
 		int pos = texasBean.getPlayer().getPos();
+
+		// player
 		showCards(texasBean.getPlayer());
 		lbl_money.setText(texasBean.getPlayer().getMoney() + "");
 		lbl_bet.setText(texasBean.getPlayer().getBet() + "");
+
+		// flops
+		if (texasBean.getFlops().size() > 2) {
+			lbl_flop_1.setText(querySuit(texasBean.getFlops().get(0).getSuit())
+					+ texasBean.getFlops().get(0).getNum());
+			lbl_flop_2.setText(querySuit(texasBean.getFlops().get(1).getSuit())
+					+ texasBean.getFlops().get(1).getNum());
+			lbl_flop_3.setText(querySuit(texasBean.getFlops().get(2).getSuit())
+					+ texasBean.getFlops().get(2).getNum());
+		}
+		
+		// turn
+		if(texasBean.getTurn()!=null){
+			lbl_turn.setText(querySuit(texasBean.getTurn().getSuit())
+					+ texasBean.getTurn().getNum());
+		}
+		
+		//river
+		if(texasBean.getRiver()!=null){
+			lbl_river.setText(querySuit(texasBean.getRiver().getSuit())
+					+ texasBean.getRiver().getNum());
+		}
+
+		// others
 		for (int i = pos + 1; i < texasBean.getMaxPlayerNum(); i++) {
-			String state = texasBean.getOthers().get(i).getState();
+			String state = texasBean.getTableState();
 			if (state != null) {
 				if (state.equals("show")) {
 					lbl_p2_card_1.setText(querySuit(texasBean.getOthers()
@@ -286,9 +322,8 @@ public class TexasFrame extends JFrame {
 				lbl_p2_bet.setText(texasBean.getOthers().get(i).getBet() + "");
 			}
 		}
-		
 		for (int i = 0; i < pos; i++) {
-			String state = texasBean.getOthers().get(i).getState();
+			String state = texasBean.getTableState();
 			if (state != null) {
 				if (state.equals("show")) {
 					lbl_p2_card_1.setText(querySuit(texasBean.getOthers()

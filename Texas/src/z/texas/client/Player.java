@@ -16,6 +16,7 @@ public class Player {
 	private Gson gson;
 	private TexasBean texasBean;
 	private TexasFrame texasFrame;
+	private String oriState;
 
 	public Player(TexasFrame texasFrame) {
 		this.texasFrame = texasFrame;
@@ -33,6 +34,7 @@ public class Player {
 		PlayerBean playerBean = new PlayerBean();
 		playerBean.setName(name);
 		playerBean.setState("connect");
+		oriState = "connect";
 		texasBean.setPlayer(playerBean);
 		if (client.connect(host, port)) {
 			client.send(gson.toJson(texasBean));
@@ -43,6 +45,7 @@ public class Player {
 
 	public void ready() {
 		texasBean.getPlayer().setState("ready");
+		oriState = "ready";
 		String json = gson.toJson(texasBean);
 		client.send(json);
 	}
@@ -50,12 +53,20 @@ public class Player {
 	public void parse(String str) {
 		texasBean = gson.fromJson(str, TexasBean.class);
 		PlayerBean playerBean = texasBean.getPlayer();
+		if (playerBean.getState().equals(oriState)){
+			texasFrame.print("wait");
+			if(texasBean.getTableState()!=null){
+				texasFrame.showItems(texasBean);
+			}
+			return;
+		}
 		switch (playerBean.getState()) {
 		case "watch":
 			texasFrame.print("旁观");
+			break;
 		case "start":
 			texasFrame.print("开始");
-			texasFrame.showPlayers(texasBean);
+			texasFrame.showItems(texasBean);
 			break;
 		case "choose":
 			int beg = texasBean.getMaxBet() - playerBean.getBet();
@@ -63,13 +74,14 @@ public class Player {
 				texasFrame.print("check or raise(at least "
 						+ texasBean.getBigBlind() + ") or fold");
 			} else {
-				texasFrame.print("call "
-						+ (texasBean.getMaxBet() - playerBean.getBet())
-						+ "or raise(at least "
-						+ (texasBean.getMaxBet() - playerBean.getBet() + texasBean
-								.getBigBlind()) + ") or fold");
+				texasFrame
+						.print("call "
+								+ (texasBean.getMaxBet() - playerBean.getBet())
+								+ "or raise(at least "
+								+ (texasBean.getMaxBet() - playerBean.getBet() + texasBean
+										.getBigBlind()) + ") or fold");
 			}
-			texasFrame.showPlayers(texasBean);
+			texasFrame.showItems(texasBean);
 			break;
 		default:
 			break;
@@ -84,14 +96,32 @@ public class Player {
 		PlayerBean playerBean = texasBean.getPlayer();
 		playerBean.setMoney(playerBean.getMoney()
 				- (texasBean.getMaxBet() - playerBean.getBet()));
+		texasBean.getPools().set(
+				0,
+				texasBean.getPools().get(0)
+						+ (texasBean.getMaxBet() - playerBean.getBet()));
 		playerBean.setBet(texasBean.getMaxBet());
 		playerBean.setState("call");
-		texasFrame.showPlayers(texasBean);
+		oriState = "call";
+		texasFrame.showItems(texasBean);
 		client.send(gson.toJson(texasBean));
 	}
 
 	public void check() {
 		texasBean.getPlayer().setState("check");
+		oriState = "check";
+		client.send(gson.toJson(texasBean));
+	}
+
+	public void raise(int bet) {
+		PlayerBean playerBean = texasBean.getPlayer();
+		playerBean.setMoney(playerBean.getMoney()-bet);
+		playerBean.setBet(playerBean.getBet()+bet);
+		texasBean.getPools().set(0, texasBean.getPools().get(0)+bet);
+		playerBean.setState("raise");
+		texasBean.setMaxBet(playerBean.getBet());
+		oriState = "raise";
+		texasFrame.showItems(texasBean);
 		client.send(gson.toJson(texasBean));
 	}
 
