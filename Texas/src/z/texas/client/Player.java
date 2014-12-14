@@ -50,7 +50,7 @@ public class Player {
 		client.send(json);
 	}
 
-	public void parse(String str) {
+	public void parse(String str) throws InterruptedException {
 		texasBean = gson.fromJson(str, TexasBean.class);
 		PlayerBean playerBean = texasBean.getPlayer();
 		if (playerBean.getState().equals(oriState)){
@@ -82,6 +82,16 @@ public class Player {
 										.getBigBlind()) + ") or fold");
 			}
 			texasFrame.showItems(texasBean);
+			break;
+		case "win":
+			texasFrame.showItems(texasBean);
+			Thread.sleep(5000);
+			ready();
+			break;
+		case "lose":
+			texasFrame.showItems(texasBean);
+			Thread.sleep(5000);
+			ready();
 			break;
 		default:
 			break;
@@ -122,6 +132,12 @@ public class Player {
 		texasBean.setMaxBet(playerBean.getBet());
 		oriState = "raise";
 		texasFrame.showItems(texasBean);
+		client.send(gson.toJson(texasBean));
+	}
+
+	public void fold() {
+		texasBean.getPlayer().setState("fold");
+		oriState = "fold";
 		client.send(gson.toJson(texasBean));
 	}
 

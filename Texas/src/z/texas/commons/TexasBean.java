@@ -14,6 +14,7 @@ public class TexasBean {
 	private int maxPlayerNum;
 	private String tableState;
 	private ArrayList<Integer> pools; // 底池，边池
+	private int winnerType;
 
 	public TexasBean(){
 		others = new ArrayList<PlayerBean>();
@@ -107,6 +108,14 @@ public class TexasBean {
 
 	public void setPools(ArrayList<Integer> pools) {
 		this.pools = pools;
+	}
+
+	public int getWinnerType() {
+		return winnerType;
+	}
+
+	public void setWinnerType(int winnerType) {
+		this.winnerType = winnerType;
 	}
 
 }

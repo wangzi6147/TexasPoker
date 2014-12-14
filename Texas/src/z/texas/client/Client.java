@@ -52,7 +52,7 @@ public class Client implements Runnable{
 		while(!isStop){
 			try {
 				player.parse(dis.readUTF());
-			} catch (IOException e) {
+			} catch (IOException | InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

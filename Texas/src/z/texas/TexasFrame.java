@@ -26,7 +26,7 @@ public class TexasFrame extends JFrame {
 	private JTextField textField_port;
 	private JTextField textField_name;
 	protected Player player;
-	private JLabel lbl_state;
+	private JLabel lbl_msg;
 	private JButton btnNewButton_3;
 	private JButton btnCall;
 	private JLabel lbl_card_1;
@@ -43,6 +43,9 @@ public class TexasFrame extends JFrame {
 	private JLabel lbl_flop_3;
 	private JLabel lbl_turn;
 	private JLabel lbl_river;
+	private JLabel lbl_state;
+	private JLabel lbl_p2_state;
+	private JLabel lblWinnerType;
 
 	/**
 	 * Launch the application.
@@ -77,10 +80,10 @@ public class TexasFrame extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		lbl_state = new JLabel("Hello Texas");
-		lbl_state.setHorizontalAlignment(SwingConstants.CENTER);
-		lbl_state.setBounds(10, 10, 298, 15);
-		contentPane.add(lbl_state);
+		lbl_msg = new JLabel("Hello Texas");
+		lbl_msg.setHorizontalAlignment(SwingConstants.CENTER);
+		lbl_msg.setBounds(10, 10, 298, 15);
+		contentPane.add(lbl_msg);
 
 		txtAddress = new JTextField();
 		txtAddress.setBounds(10, 74, 93, 21);
@@ -102,7 +105,7 @@ public class TexasFrame extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				server = new Server();
 				server.start();
-				lbl_state.setText("服务器已启动");
+				lbl_msg.setText("服务器已启动");
 			}
 		});
 		btnNewButton.setBounds(10, 41, 169, 23);
@@ -116,9 +119,9 @@ public class TexasFrame extends JFrame {
 				if (player.connect(txtAddress.getText(),
 						textField_name.getText(),
 						Integer.parseInt(textField_port.getText()))) {
-					lbl_state.setText("连接成功");
+					lbl_msg.setText("连接成功");
 				} else {
-					lbl_state.setText("连接失败");
+					lbl_msg.setText("连接失败");
 				}
 			}
 		});
@@ -141,7 +144,7 @@ public class TexasFrame extends JFrame {
 		btnNewButton_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				player.ready();
-				lbl_state.setText("已准备");
+				lbl_msg.setText("已准备");
 			}
 		});
 		btnNewButton_3.setBounds(10, 136, 93, 23);
@@ -232,13 +235,30 @@ public class TexasFrame extends JFrame {
 		txt_bet.setColumns(10);
 
 		JButton btnFold = new JButton("fold");
+		btnFold.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				player.fold();
+			}
+		});
 		btnFold.setBounds(471, 386, 93, 23);
 		contentPane.add(btnFold);
+		
+		lbl_p2_state = new JLabel("state");
+		lbl_p2_state.setBounds(220, 60, 54, 15);
+		contentPane.add(lbl_p2_state);
+		
+		lbl_state = new JLabel("state");
+		lbl_state.setBounds(220, 347, 54, 15);
+		contentPane.add(lbl_state);
+		
+		lblWinnerType = new JLabel("winner type");
+		lblWinnerType.setBounds(574, 45, 93, 15);
+		contentPane.add(lblWinnerType);
 
 	}
 
 	public void print(String string) {
-		lbl_state.setText(string);
+		lbl_msg.setText(string);
 	}
 
 	private void showCards(PlayerBean playerBean) {
@@ -275,8 +295,14 @@ public class TexasFrame extends JFrame {
 
 		// player
 		showCards(texasBean.getPlayer());
+		lbl_state.setText(texasBean.getPlayer().getState());
 		lbl_money.setText(texasBean.getPlayer().getMoney() + "");
 		lbl_bet.setText(texasBean.getPlayer().getBet() + "");
+		
+		// winner
+		if(texasBean.getWinnerType()!=0){
+			lblWinnerType.setText(getWinnerType(texasBean.getWinnerType()));			
+		}
 
 		// flops
 		if (texasBean.getFlops().size() > 2) {
@@ -320,6 +346,7 @@ public class TexasFrame extends JFrame {
 				lbl_p2_money.setText(texasBean.getOthers().get(i).getMoney()
 						+ "");
 				lbl_p2_bet.setText(texasBean.getOthers().get(i).getBet() + "");
+				lbl_p2_state.setText(texasBean.getOthers().get(i).getState());
 			}
 		}
 		for (int i = 0; i < pos; i++) {
@@ -341,7 +368,47 @@ public class TexasFrame extends JFrame {
 				lbl_p2_money.setText(texasBean.getOthers().get(i).getMoney()
 						+ "");
 				lbl_p2_bet.setText(texasBean.getOthers().get(i).getBet() + "");
+				lbl_p2_state.setText(texasBean.getOthers().get(i).getState());
 			}
 		}
+	}
+
+	private String getWinnerType(int winnerType) {
+		String type = null;
+		switch (winnerType) {
+		case 10:
+			type = "皇家同花顺赢";
+			break;
+		case 9:
+			type = "同花顺赢";
+			break;
+		case 8:
+			type = "四条赢";
+			break;
+		case 7:
+			type = "葫芦赢";
+			break;
+		case 6:
+			type = "同花赢";
+			break;
+		case 5:
+			type = "顺子赢";
+			break;
+		case 4:
+			type = "三条赢";
+			break;
+		case 3:
+			type = "两对赢";
+			break;
+		case 2:
+			type = "对子赢";
+			break;
+		case 1:
+			type = "高牌赢";
+			break;
+		default:
+			break;
+		}
+		return type;
 	}
 }

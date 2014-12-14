@@ -1,5 +1,6 @@
 package z.texas.server;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -8,6 +9,7 @@ import javax.swing.JFrame;
 import com.google.gson.Gson;
 
 import z.texas.commons.CardBean;
+import z.texas.commons.CardUtil;
 import z.texas.commons.PlayerBean;
 import z.texas.commons.TexasBean;
 
@@ -26,6 +28,7 @@ public class Dealer {
 	private ArrayList<Integer> pools; // 底池，边池
 	private int nextPlayerPos;
 	private int smallBlindPos;
+	private PlayerBean playerBean;
 
 	public Dealer(TaskManager taskManager) {
 		this.taskManager = taskManager;
@@ -86,6 +89,7 @@ public class Dealer {
 				break;
 			}
 			texasBean.getPlayer().setPos(emptyPos);
+			texasBean.getPlayer().setMoney(oriMoney);
 			updateCurBean();
 			send();
 			position[emptyPos] = 1;
@@ -99,9 +103,9 @@ public class Dealer {
 		case "call":
 			updateCurBean();
 			nextPlayerPos = findNextPlayer(texasBean.getPlayer().getPos());
-			PlayerBean nextPlayer = curBean.getOthers().get(nextPlayerPos);
-			if (nextPlayer.getState().equals("raise")
-					&& nextPlayer.getBet() == curBean.getMaxBet()) {
+			playerBean = curBean.getOthers().get(nextPlayerPos);
+			if (playerBean.getState().equals("raise")
+					&& playerBean.getBet() == curBean.getMaxBet()) {
 				nextTableState();
 			} else {
 				curBean.getOthers().get(nextPlayerPos).setState("choose");
@@ -117,7 +121,7 @@ public class Dealer {
 					|| !curBean.getTableState().equals("hands")
 					&& findNextPlayer(texasBean.getPlayer().getPos()) == smallBlindPos) {
 				nextTableState();
-			}else {
+			} else {
 				nextPlayerPos = findNextPlayer(texasBean.getPlayer().getPos());
 				curBean.getOthers().get(nextPlayerPos).setState("choose");
 			}
@@ -129,8 +133,36 @@ public class Dealer {
 			curBean.getOthers().get(nextPlayerPos).setState("choose");
 			send();
 			break;
+		case "fold":
+			updateCurBean();
+			nextPlayerPos = findNextPlayer(texasBean.getPlayer().getPos());
+			playerBean = curBean.getOthers().get(nextPlayerPos);
+			if (findNextPlayer(nextPlayerPos) == -1) {
+				win(nextPlayerPos);
+			} else if (playerBean.getState().equals("raise")
+					&& playerBean.getBet() == curBean.getMaxBet()) {
+				nextTableState();
+			} else {
+				playerBean.setState("choose");
+			}
+			send();
+			break;
 		default:
 			break;
+		}
+	}
+
+	private void win(int pos) {
+		for (PlayerBean playerBean : curBean.getOthers()) {
+			if (playerBean.getPos() == pos) {
+				playerBean.setMoney(playerBean.getMoney()
+						+ curBean.getPools().get(0));
+				playerBean.setState("win");
+			} else {
+				playerBean.setState("lose");
+			}
+			playerBean.setBet(0);
+			bankPos = findNextPlayer(bankPos);
 		}
 	}
 
@@ -139,28 +171,42 @@ public class Dealer {
 		case "hands":
 			curBean.setTableState("flops");
 			curBean.setFlops(dealCard(3));
-			smallBlindPos = findNextPlayer(bankPos);
 			curBean.getOthers().get(smallBlindPos).setState("choose");
 			break;
 		case "flops":
 			curBean.setTableState("turn");
 			curBean.setTurn(dealCard(1).get(0));
-			smallBlindPos = findNextPlayer(bankPos);
 			curBean.getOthers().get(smallBlindPos).setState("choose");
 			break;
 		case "turn":
 			curBean.setTableState("river");
 			curBean.setRiver(dealCard(1).get(0));
-			smallBlindPos = findNextPlayer(bankPos);
 			curBean.getOthers().get(smallBlindPos).setState("choose");
 			break;
 		case "river":
 			curBean.setTableState("show");
-			smallBlindPos = findNextPlayer(bankPos);
+			int winnerPos = findWinner();
+			win(winnerPos);
 			break;
 		default:
 			break;
 		}
+	}
+
+	private int findWinner() {
+		int maxType = 0;
+		PlayerBean winnerBean = null;
+		for (PlayerBean playerBean : curBean.getOthers()) {
+			int cardType = CardUtil.recognise(playerBean,curBean);
+			if (cardType > maxType) {
+				winnerBean = playerBean;
+			} else if (cardType == maxType) {
+				winnerBean = CardUtil.ifWinInSameType(playerBean, winnerBean, curBean,
+						maxType) ? playerBean : winnerBean;
+			}
+		}
+		curBean.setWinnerType(maxType);
+		return winnerBean.getPos();
 	}
 
 	private void updateCurBean() {
@@ -181,6 +227,7 @@ public class Dealer {
 	}
 
 	private void allStart() {
+		pools.clear();
 		pools.add(new Integer(0));
 		bankPos = findNextPlayer(bankPos);
 		int smallBlindPos = findNextPlayer(bankPos);
@@ -193,14 +240,12 @@ public class Dealer {
 				playerBean.setHands(dealCard(2));
 				if (i == smallBlindPos) {
 					playerBean.setBet(oriBlind / 2);
-					playerBean.setMoney(oriMoney - oriBlind / 2);
+					playerBean.setMoney(playerBean.getMoney() - oriBlind / 2);
 					pools.set(0, pools.get(0) + oriBlind / 2);
 				} else if (i == bigBlindPos) {
 					playerBean.setBet(oriBlind);
-					playerBean.setMoney(oriMoney - oriBlind);
+					playerBean.setMoney(playerBean.getMoney() - oriBlind);
 					pools.set(0, pools.get(0) + oriBlind);
-				} else {
-					playerBean.setMoney(oriMoney);
 				}
 				curBean.setPlayer(playerBean);
 				curBean.setMaxBet(oriBlind);
@@ -222,16 +267,16 @@ public class Dealer {
 
 	private int findNextPlayer(int curPos) {
 		for (int i = curPos + 1; i < MAX_NUM; i++) {
-			String state = texasBean.getOthers().get(i).getState();
+			String state = curBean.getOthers().get(i).getState();
 			if (state != null && !state.equals("fold"))
 				return i;
 		}
 		for (int i = 0; i < curPos; i++) {
-			String state = texasBean.getOthers().get(i).getState();
+			String state = curBean.getOthers().get(i).getState();
 			if (state != null && !state.equals("fold"))
 				return i;
 		}
-		return 0;
+		return -1;
 	}
 
 	private boolean allReady() {
