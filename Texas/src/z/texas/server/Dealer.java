@@ -200,6 +200,7 @@ public class Dealer {
 			int cardType = CardUtil.recognise(playerBean,curBean);
 			if (cardType > maxType) {
 				winnerBean = playerBean;
+				maxType = cardType;
 			} else if (cardType == maxType) {
 				winnerBean = CardUtil.ifWinInSameType(playerBean, winnerBean, curBean,
 						maxType) ? playerBean : winnerBean;
@@ -254,6 +255,10 @@ public class Dealer {
 		}
 		curBean.setPools(pools);
 		curBean.setTableState("hands");
+		curBean.getFlops().clear();
+		curBean.setTurn(null);
+		curBean.setRiver(null);
+		curBean.setWinnerType(0);
 		send();
 		for (int i = 0; i < curBean.getOthers().size(); i++) {
 			PlayerBean playerBean = curBean.getOthers().get(i);

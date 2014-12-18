@@ -302,28 +302,38 @@ public class TexasFrame extends JFrame {
 		// winner
 		if(texasBean.getWinnerType()!=0){
 			lblWinnerType.setText(getWinnerType(texasBean.getWinnerType()));			
+		}else {
+			lblWinnerType.setText("winner type");
 		}
 
 		// flops
-		if (texasBean.getFlops().size() > 2) {
+		if (texasBean.getFlops()!=null&&texasBean.getFlops().size()>2) {
 			lbl_flop_1.setText(querySuit(texasBean.getFlops().get(0).getSuit())
 					+ texasBean.getFlops().get(0).getNum());
 			lbl_flop_2.setText(querySuit(texasBean.getFlops().get(1).getSuit())
 					+ texasBean.getFlops().get(1).getNum());
 			lbl_flop_3.setText(querySuit(texasBean.getFlops().get(2).getSuit())
 					+ texasBean.getFlops().get(2).getNum());
+		}else {
+			lbl_flop_1.setText("flop_1");
+			lbl_flop_2.setText("flop_2");
+			lbl_flop_3.setText("flop_3");
 		}
 		
 		// turn
 		if(texasBean.getTurn()!=null){
 			lbl_turn.setText(querySuit(texasBean.getTurn().getSuit())
 					+ texasBean.getTurn().getNum());
+		}else {
+			lbl_turn.setText("turn");
 		}
 		
 		//river
 		if(texasBean.getRiver()!=null){
 			lbl_river.setText(querySuit(texasBean.getRiver().getSuit())
 					+ texasBean.getRiver().getNum());
+		}else {
+			lbl_river.setText("river");
 		}
 
 		// others
