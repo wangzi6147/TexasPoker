@@ -29,6 +29,7 @@ public class Dealer {
 	private int nextPlayerPos;
 	private int smallBlindPos;
 	private PlayerBean playerBean;
+	private int bigBlindPos;
 
 	public Dealer(TaskManager taskManager) {
 		this.taskManager = taskManager;
@@ -114,8 +115,8 @@ public class Dealer {
 			break;
 		case "check":
 			updateCurBean();
-			int smallBlindPos = findNextPlayer(bankPos);
-			int bigBlindPos = findNextPlayer(smallBlindPos);
+			smallBlindPos = findNextPlayer(bankPos);
+			bigBlindPos = findNextPlayer(smallBlindPos);
 			if (curBean.getTableState().equals("hands")
 					&& texasBean.getPlayer().getPos() == bigBlindPos
 					|| !curBean.getTableState().equals("hands")
@@ -162,7 +163,6 @@ public class Dealer {
 				playerBean.setState("lose");
 			}
 			playerBean.setBet(0);
-			bankPos = findNextPlayer(bankPos);
 		}
 	}
 

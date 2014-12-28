@@ -3,6 +3,18 @@ package z.texas.commons;
 import java.util.ArrayList;
 
 public class CardUtil {
+//	public static void main(String args[]){
+//		ArrayList<CardBean> allCards = new ArrayList<CardBean>();
+//		allCards.add(new CardBean(9, 0));
+//		allCards.add(new CardBean(13, 0));
+//		allCards.add(new CardBean(13, 1));
+//		allCards.add(new CardBean(8,4));
+//		allCards.add(new CardBean(12, 0));
+//		allCards.add(new CardBean(5, 0));
+//		allCards.add(new CardBean(4, 1));
+//		allCards = sort(allCards);
+//		System.out.println(isPair(allCards));
+//	}
 	public static int recognise(PlayerBean playerBean, TexasBean curBean) {
 		int type = 0;
 		ArrayList<CardBean> allCards = getAllCards(playerBean, curBean);
@@ -108,9 +120,9 @@ public class CardUtil {
 	private static boolean isFlush(ArrayList<CardBean> allCards) {
 		int count = 0;
 		int curSuit = -1;
-		allCards = sortAsSuit(allCards);
-		for (CardBean cardBean : allCards) {
-			if (cardBean.getNum() != curSuit) {
+		ArrayList<CardBean> suitCards = sortAsSuit(allCards);
+		for (CardBean cardBean : suitCards) {
+			if (cardBean.getSuit() != curSuit) {
 				count = 1;
 				curSuit = cardBean.getSuit();
 			} else {
@@ -180,9 +192,9 @@ public class CardUtil {
 	private static boolean isStraightFlush(ArrayList<CardBean> allCards) {
 		int count = 0;
 		int curSuit = -1;
-		allCards = sortAsSuit(allCards);
-		for (CardBean cardBean : allCards) {
-			if (cardBean.getNum() != curSuit) {
+		ArrayList<CardBean> suitCards = sortAsSuit(allCards);
+		for (CardBean cardBean : suitCards) {
+			if (cardBean.getSuit() != curSuit) {
 				count = 1;
 				curSuit = cardBean.getSuit();
 			} else {
@@ -192,7 +204,6 @@ public class CardUtil {
 				}
 			}
 		}
-		allCards = sort(allCards);
 		count = 0;
 		int curNum = 0;
 		for (CardBean cardBean : allCards) {
@@ -217,9 +228,9 @@ public class CardUtil {
 		int count = 0;
 		int curSuit = -1;
 		int maxStraightNum = 0;
-		allCards = sortAsSuit(allCards);
-		for (CardBean cardBean : allCards) {
-			if (cardBean.getNum() != curSuit) {
+		ArrayList<CardBean> suitCards = sortAsSuit(allCards);
+		for (CardBean cardBean : suitCards) {
+			if (cardBean.getSuit() != curSuit) {
 				count = 1;
 				curSuit = cardBean.getSuit();
 			} else {
@@ -229,7 +240,6 @@ public class CardUtil {
 				}
 			}
 		}
-		allCards = sort(allCards);
 		count = 0;
 		int curNum = 0;
 		for (CardBean cardBean : allCards) {
@@ -260,9 +270,8 @@ public class CardUtil {
 	private static ArrayList<CardBean> sortAsSuit(ArrayList<CardBean> allCards) {
 		ArrayList<CardBean> result = new ArrayList<CardBean>();
 		result.add(allCards.get(0));
-		allCards.remove(0);
-		boolean ifInsert = false;
-		for (int i = 0; i < allCards.size(); i++) {
+		for (int i = 1; i < allCards.size(); i++) {
+			boolean ifInsert = false;
 			for (int j = 0; j < result.size(); j++) {
 				if (allCards.get(i).getSuit() > result.get(j).getSuit()) {
 					result.add(j, allCards.get(i));
@@ -280,9 +289,8 @@ public class CardUtil {
 	private static ArrayList<CardBean> sort(ArrayList<CardBean> allCards) {
 		ArrayList<CardBean> result = new ArrayList<CardBean>();
 		result.add(allCards.get(0));
-		allCards.remove(0);
-		boolean ifInsert = false;
-		for (int i = 0; i < allCards.size(); i++) {
+		for (int i = 1; i < allCards.size(); i++) {
+			boolean ifInsert = false;
 			for (int j = 0; j < result.size(); j++) {
 				if (allCards.get(i).getNum() > result.get(j).getNum()) {
 					result.add(j, allCards.get(i));
